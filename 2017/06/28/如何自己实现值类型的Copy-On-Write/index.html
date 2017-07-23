@@ -3,21 +3,33 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Harris&#39;Blog | Enjoy Share</title>
+  <title>如何自己实现值类型的Copy-On-Write | Harris&#39;Blog | Enjoy Share</title>
 
   
   <meta name="author" content="HarrisHan">
   
 
   
+  <meta name="description" content="起因
 
+对于Swift中的值类型，为了避免不必要的拷贝行为，使用了copy on write 的优化手段，那么它是怎么实现的呢？
+
+认知Copy-On-Write
+
+定义一个Swift中的Array
+var numbers1 = [1, 2, 3, 4, 5]虽然Array是一个struct，但nu">
+  
+
+  
+  
+  <meta name="keywords" content="">
   
 
   <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-  
+  <meta property="og:title" content="如何自己实现值类型的Copy-On-Write"/>
 
   <meta property="og:site_name" content="Harris&#39;Blog"/>
 
@@ -58,12 +70,11 @@
 </header>
 
     <main class="site-main posts-loop">
-    
-  <article>
+    <article>
 
   
     
-    <h3 class="article-title"><a href="/2017/06/28/如何自己实现值类型的Copy-On-Write/"><span>如何自己实现值类型的Copy-On-Write</span></a></h3>
+    <h3 class="article-title"><span>如何自己实现值类型的Copy-On-Write</span></h3>
     
   
 
@@ -145,12 +156,6 @@
 </article>
 
 
-
-
-<nav class="pagination">
-  
-  
-</nav>
     </main>
 
     <footer class="site-footer">
