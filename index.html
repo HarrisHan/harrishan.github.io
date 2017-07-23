@@ -83,48 +83,33 @@
   <div class="article-content">
     <div class="entry">
       
-        <ul>
-<li>起因</li>
-</ul>
-<p>对于Swift中的值类型，为了避免不必要的拷贝行为，使用了copy on write 的优化手段，那么它是怎么实现的呢？</p>
-<ul>
-<li>认知Copy-On-Write</li>
-</ul>
-<p>定义一个Swift中的Array</p>
-<p><code>var numbers1 = [1, 2, 3, 4, 5]</code><br>虽然Array是一个<code>struct</code>，但numbers1中的数字并不保存在numbers1对象里，它们会另外存储在系统堆内存中。numbers1对象里，只会保存指向堆内存的一个引用。我们可以用下面的代码确认这个事情：</p>
-<p><code>MemoryLayout.size(ofValue: numbers1) // 8</code><br>可以看到，这段代码的返回的结果是8，也就是一个64位内存地址占用的空间，事实上，无论数组里存放多少元素，一个Array对象的大小都是一个内存地址的大小。</p>
-<p>此时，如果我们复制一个numbers1对象：<br><code>var numbers2 = numbers1</code><br>由于Array实现了Copy-On-Write机制，numbers1和numbers2会指向系统堆中的同一个位置。直到我们修改了其中的一个对象：<br><code>numbers2[0] = 11</code><br>这时，numbers2就会拷贝numbers1的内容，并把数组第一个位置的值设置成11。但是，假设没有numbers2，分配出来的系统堆就只会有numbers1对象的一个引用。这时，先拷贝原数组的值，再进行修改就显得多余了，作为一项可以优化的手段，我们可以选择直接在numbers1的原始内存中修改。</p>
-<p>以上谈到的这个机制，就是Swift中的copy on write。通过之前的描述你应该能感受到，不同的自定义类型很难存在通用的COW实现机制。因此，这不是一个Swift语言的福利，我们需要自己编写额外的代码。</p>
+        <h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>对于Swift中的值类型，为了避免不必要的拷贝行为，使用了copy on write 的优化手段，那么它是怎么实现的呢？</p>
+<h3 id="认知Copy-On-Write"><a href="#认知Copy-On-Write" class="headerlink" title="认知Copy-On-Write"></a>认知Copy-On-Write</h3><p>定义一个Swift中的Array</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">var numbers1 = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]</div></pre></td></tr></table></figure>
+<p>虽然Array是一个<code>struct</code>，但numbers1中的数字并不保存在numbers1对象里，它们会另外存储在系统<code>堆内存</code>中。numbers1对象里，只会保存指向堆内存的一个引用。我们可以用下面的代码确认这个事情：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MemoryLayout.size(ofValue: numbers1) <span class="comment">// 8</span></div></pre></td></tr></table></figure>
+<p>可以看到，这段代码的返回的结果是8，也就是一个64位内存地址占用的空间，事实上，无论数组里存放多少元素，一个Array对象的大小都是一个内存地址的大小。</p>
+<p>此时，如果我们复制一个numbers1对象：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">var numbers2 = numbers1</div></pre></td></tr></table></figure></p>
+<p>由于Array实现了Copy-On-Write机制，numbers1和numbers2会指向系统堆中的同一个位置。直到我们修改了其中的一个对象：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">numbers2[<span class="number">0</span>] = <span class="number">11</span></div></pre></td></tr></table></figure></p>
+<p>这时，numbers2就会拷贝numbers1的内容，并把数组第一个位置的值设置成11。但是，假设没有numbers2，分配出来的系统堆就只会有numbers1对象的一个引用。这时，先拷贝原数组的值，再进行修改就显得多余了，作为一项可以优化的手段，我们可以选择直接在numbers1的原始内存中修改。</p>
+<p>以上谈到的这个机制，就是Swift中的Copy-On-Write。通过之前的描述你应该能感受到，不同的自定义类型很难存在通用的COW实现机制。因此，这不是一个Swift语言的福利，我们需要自己编写额外的代码。</p>
 <p>并且，通过观察Array的工作机制不难发现，当一个值类型中包含引用类型的对象时，为了在拷贝对象时的值语义正确，我们必须明确处理被包含的引用对象的拷贝规则。因此，也可以说，COW并不是一个可有可无的优化手段，在某些情况下，还是我们必须思考和处理的问题。</p>
 <p>接下来，我们就自己实现一个支持COW的MyArray，以此，加深对COW运行机制的了解。</p>
-<ul>
-<li>一个简单粗暴的Copy-On-Write实现</li>
-</ul>
-<p>首先，为了让所有的MyArray对象共享存储元素的空间，我们让它包含一个NSMutableArray对象：<br>`struct MyArray {<br>    var data: NSMutableArray</p>
-<pre><code>init(data: NSMutableArray) {
-    self.data = data.mutableCopy() as! NSMutableArray
-}
-</code></pre><p>}<code>然后，为了在操作MyArray对象时隐藏data，我们再给它添加一个插入元素的方法：</code>extension MyArray {<br>    func append(element: Any) {<br>        data.insert(element, at: self.data.count)<br>    }<br>}<code>在创建新的MyArray对象时，为了实现值语义，我们让self.data等于了init参数的一个拷贝。但这样做并没有Copy-On-Write的效果，我们看下面的例子：</code>let m = MyArray(data: [1, 2, 3])<br>let n = m</p>
-<p>m.append(11)</p>
-<p>m.data === n.data // true`<br>在上面的代码里，尽管m和n都是常量，但data是一个引用类型，我们仍旧可以修改它引用的内容，这种修改并不会被认为是修改MyArray对象本身。不信，你回头去看，我们甚至都不需要使用mutating来修饰append(:)方法。</p>
+<h3 id="一个简单粗暴的Copy-On-Write实现"><a href="#一个简单粗暴的Copy-On-Write实现" class="headerlink" title="一个简单粗暴的Copy-On-Write实现"></a>一个简单粗暴的Copy-On-Write实现</h3><p>首先，为了让所有的MyArray对象共享存储元素的空间，我们让它包含一个NSMutableArray对象：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> MyArray &#123;</div><div class="line">    var data: <span class="built_in">NSMutableArray</span></div><div class="line"></div><div class="line">    init(data: <span class="built_in">NSMutableArray</span>) &#123;</div><div class="line">        <span class="keyword">self</span>.data = data.mutableCopy() as! <span class="built_in">NSMutableArray</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>然后，为了在操作MyArray对象时隐藏data，我们再给它添加一个插入元素的方法：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">extension MyArray &#123;</div><div class="line">    func append(element: Any) &#123;</div><div class="line">        data.insert(element, at: <span class="keyword">self</span>.data.count)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在创建新的MyArray对象时，为了实现值语义，我们让self.data等于了init参数的一个拷贝。但这样做并没有Copy-On-Write的效果，我们看下面的例子：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">let m = MyArray(data: [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</div><div class="line">let n = m</div><div class="line"></div><div class="line">m.append(<span class="number">11</span>)</div><div class="line"></div><div class="line">m.data === n.data <span class="comment">// true</span></div></pre></td></tr></table></figure></p>
+<p>在上面的代码里，尽管m和n都是常量，但data是一个引用类型，我们仍旧可以修改它引用的内容，这种修改并不会被认为是修改MyArray对象本身。不信，你回头去看，我们甚至都不需要使用mutating来修饰append(:)方法。</p>
 <p>但是，把m拷贝到n之后，尽管我们修改了m，但m和n引用相等的比较结果，仍旧是true。也就是说，m和n中的data仍旧是同一个对象。当然，这也不意外，毕竟我们没有特别处理拷贝MyArray对象时，data引用内容的处理方式。</p>
 <p>那么，究竟该如何实现COW的效果呢？</p>
 <p>由于Swift并不像C++一样允许我们通过拷贝构造函数来明确定义对象的拷贝行为。我们只能在需要COW的属性上下功夫，把它用一个computed property封装起来。然后，把所有修改属性的操作，都交由这个computed property完成。</p>
-<p>例如，我们给MyArray.data添加一个新的属性：<br><code>struct MyArray {
-    var dataCOW: NSMutableArray {
-        mutating get {
-            data = data.mutableCopy() as! NSMutableArray
-            return data
-        }
-    }
-}</code><br>很简单，每当读取dataCOW的时候，我们就创建一个data的拷贝。但是，由于我们在get里修改了data，就像我们之前提到的，这也是一个修改self的行为，因此，我们也要使用mutating来修饰。</p>
-<p>接下来，所有要对data的修改操作，我们可以使用dataCOW来完成。例如：append(:)方法可以修改成这样：<br><code>extension MyArray {
-    mutating func append(_ element: Any) {
-        dataCOW.insert(element, at: self.data.count)
-    }
-}</code><br>这样，append(:)就会在一个data的拷贝上添加元素了。并且，由于append(:)使用了mutating修饰，我们也无法再修改常量MyArray对象了。此时，编译器会对m.append(11)这行代码报错。这样就在实现了COW效果的同时，完美隐藏了MyArray内部使用了引用类型作为数据存储的事实。我们把m改成变量，这时之前的引用相等比较就会返回false了。<br>`var m = MyArray(data: [1, 2, 3])<br>let n = m</p>
-<p>m.append(11)</p>
-<p>m.data === n.data // false here<code>怎么样，是不是这个实现方式比你想象的要简单的多？的确，这样可以工作，但是却很暴力，它存在一个明显的硬伤，当我们需要多次修改MyArray对象，而只需要最后的结果时，所有中间的拷贝操作就成了浪费。例如，我们通过for循环给MyArray添加内容：</code>for i in 1…10 {<br>    m.append(i)<br>}`<br>如果你理解了MyArray的COW机制，就会立刻发现for循环每执行一次，MyArray.data就会被拷贝一次。但中间过程的拷贝明显是没意义的。因此，这个方案有点儿过于简单粗暴了。</p>
+<p>例如，我们给MyArray.data添加一个新的属性：<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> MyArray &#123;</div><div class="line">    var dataCOW: <span class="built_in">NSMutableArray</span> &#123;</div><div class="line">        mutating get &#123;</div><div class="line">            data = data.mutableCopy() as! <span class="built_in">NSMutableArray</span></div><div class="line">            <span class="keyword">return</span> data</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>很简单，每当读取dataCOW的时候，我们就创建一个data的拷贝。但是，由于我们在get里修改了data，就像我们之前提到的，这也是一个修改self的行为，因此，我们也要使用mutating来修饰。</p>
+<p>接下来，所有要对data的修改操作，我们可以使用dataCOW来完成。例如：append(:)方法可以修改成这样：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">extension MyArray &#123;</div><div class="line">    mutating func append(_ element: Any) &#123;</div><div class="line">        dataCOW.insert(element, at: <span class="keyword">self</span>.data.count)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样，append(:)就会在一个data的拷贝上添加元素了。并且，由于append(:)使用了mutating修饰，我们也无法再修改常量MyArray对象了。此时，编译器会对m.append(11)这行代码报错。这样就在实现了COW效果的同时，完美隐藏了MyArray内部使用了引用类型作为数据存储的事实。我们把m改成变量，这时之前的引用相等比较就会返回false了。<br><figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">var m = MyArray(data: [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</div><div class="line">let n = m</div><div class="line"></div><div class="line">m.append(<span class="number">11</span>)</div><div class="line"></div><div class="line">m.data === n.data <span class="comment">// false here</span></div></pre></td></tr></table></figure></p>
+<p>怎么样，是不是这个实现方式比你想象的要简单的多？的确，这样可以工作，但是却很暴力，它存在一个明显的硬伤，当我们需要多次修改MyArray对象，而只需要最后的结果时，所有中间的拷贝操作就成了浪费。例如，我们通过for循环给MyArray添加内容：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="number">1.</span>.<span class="number">.10</span> &#123;</div><div class="line">    m.append(i)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果你理解了MyArray的COW机制，就会立刻发现for循环每执行一次，MyArray.data就会被拷贝一次。但中间过程的拷贝明显是没意义的。因此，这个方案有点儿过于简单粗暴了。</p>
 
       
     </div>
