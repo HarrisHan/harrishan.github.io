@@ -4,21 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Harris Han | Blockchain Engineer</title>
-  <meta name="description" content="区块链开发工程师，专注于 Web3 和 DeFi 领域。曾就职于 Binance、iQiyi，现任 Paydify 高级区块链工程师。">
+  <meta name="description" content="Blockchain Engineer - Building the future of Web3, DeFi, and decentralized systems.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+  <!-- CRT Scanlines Overlay -->
+  <div class="crt-overlay"></div>
+
+  <!-- Matrix Rain Background -->
+  <canvas id="matrix-bg"></canvas>
+
   <!-- Navigation -->
   <nav class="nav">
     <div class="container">
-      <a href="/" class="logo">Harris.Han</a>
+      <a href="/" class="logo">
+        <span class="logo-bracket">[</span>
+        <span class="logo-text">Harris.Han</span>
+        <span class="logo-bracket">]</span>
+      </a>
       <div class="nav-links">
-        <a href="/" class="nav-link active">Home</a>
-        <a href="/archives" class="nav-link">Archives</a>
-        <a href="https://github.com/HarrisHan" class="nav-link" target="_blank">GitHub</a>
+        <a href="/" class="nav-link active">
+          <span class="nav-prefix">01.</span>Home
+        </a>
+        <a href="/archives" class="nav-link">
+          <span class="nav-prefix">02.</span>Archives
+        </a>
+        <a href="https://github.com/HarrisHan" class="nav-link" target="_blank">
+          <span class="nav-prefix">03.</span>GitHub
+        </a>
       </div>
     </div>
   </nav>
@@ -27,52 +43,90 @@
     <!-- Hero Section -->
     <section class="hero">
       <div class="container">
-        <div class="hero-content">
-          <div class="status-badge">
-            <span class="status-dot"></span>
-            Available for Work
+        <div class="terminal-window">
+          <div class="terminal-header">
+            <div class="terminal-buttons">
+              <span class="btn-red"></span>
+              <span class="btn-yellow"></span>
+              <span class="btn-green"></span>
+            </div>
+            <span class="terminal-title">harris@web3:~</span>
           </div>
-          <h1 class="hero-title">Harris Han</h1>
-          <p class="hero-subtitle">Blockchain Engineer</p>
-          <p class="hero-desc">
-            Building the future of Web3. Passionate about DeFi, smart contracts, and decentralized systems.
-          </p>
+          <div class="terminal-body">
+            <div class="hero-content">
+              <p class="cmd-line">
+                <span class="prompt">$</span>
+                <span class="cmd-text typing">whoami</span>
+              </p>
+              <div class="hero-output">
+                <div class="status-badge">
+                  <span class="status-dot"></span>
+                  <span class="status-text">ONLINE</span>
+                </div>
+                <h1 class="hero-title glitch" data-text="Harris Han">Harris Han</h1>
+                <p class="hero-subtitle">
+                  <span class="cursor-blink">></span> Blockchain Engineer
+                </p>
+              </div>
+              <p class="cmd-line">
+                <span class="prompt">$</span>
+                <span class="cmd-text">cat mission.txt</span>
+              </p>
+              <p class="hero-desc">
+                Building the future of <span class="highlight">Web3</span>.
+                Passionate about <span class="highlight">DeFi</span>,
+                <span class="highlight">smart contracts</span>, and
+                <span class="highlight">decentralized systems</span>.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Tech Stack -->
-    <section class="section section-alt">
+    <section class="section">
       <div class="container">
-        <h2 class="section-title">Tech Stack</h2>
+        <h2 class="section-title">
+          <span class="section-prefix">//</span> Tech_Stack
+        </h2>
         <div class="tech-grid">
-          <div class="tech-group">
-            <h3 class="tech-group-title">Blockchain</h3>
+          <div class="tech-card">
+            <div class="tech-card-header">
+              <span class="tech-icon">&#9670;</span>
+              <h3 class="tech-card-title">Blockchain</h3>
+            </div>
             <div class="tech-items">
-              <span>Solidity</span>
-              <span>Web3.js</span>
-              <span>Ethers.js</span>
-              <span>Rust</span>
-              <span>Hardhat</span>
+              <span class="tech-tag">Solidity</span>
+              <span class="tech-tag">Web3.js</span>
+              <span class="tech-tag">Ethers.js</span>
+              <span class="tech-tag">Rust</span>
+              <span class="tech-tag">Hardhat</span>
             </div>
           </div>
-          <div class="tech-group">
-            <h3 class="tech-group-title">Backend</h3>
+          <div class="tech-card">
+            <div class="tech-card-header">
+              <span class="tech-icon">&#9670;</span>
+              <h3 class="tech-card-title">Backend</h3>
+            </div>
             <div class="tech-items">
-              <span>Go</span>
-              <span>Node.js</span>
-              <span>PostgreSQL</span>
-              <span>Redis</span>
-              <span>Docker</span>
+              <span class="tech-tag">Go</span>
+              <span class="tech-tag">Node.js</span>
+              <span class="tech-tag">PostgreSQL</span>
+              <span class="tech-tag">Redis</span>
+              <span class="tech-tag">Docker</span>
             </div>
           </div>
-          <div class="tech-group">
-            <h3 class="tech-group-title">Frontend</h3>
+          <div class="tech-card">
+            <div class="tech-card-header">
+              <span class="tech-icon">&#9670;</span>
+              <h3 class="tech-card-title">Frontend</h3>
+            </div>
             <div class="tech-items">
-              <span>React</span>
-              <span>Next.js</span>
-              <span>TypeScript</span>
-              <span>TailwindCSS</span>
+              <span class="tech-tag">React</span>
+              <span class="tech-tag">Next.js</span>
+              <span class="tech-tag">TypeScript</span>
+              <span class="tech-tag">TailwindCSS</span>
             </div>
           </div>
         </div>
@@ -82,26 +136,35 @@
     <!-- Blog Posts -->
     <section class="section">
       <div class="container">
-        <h2 class="section-title">Latest Posts</h2>
+        <h2 class="section-title">
+          <span class="section-prefix">//</span> Latest_Posts
+        </h2>
         <div class="posts-list">
-          <a href="/2017/09/05/理解Swift中struct和class在不同情况下性能的差异/" class="post-item">
-            <div class="post-meta">
-              <span class="post-date">2017-09-05</span>
+          <a href="/2017/09/05/理解Swift中struct和class在不同情况下性能的差异/" class="post-card">
+            <div class="post-card-index">01</div>
+            <div class="post-card-content">
+              <span class="post-date">[2017-09-05]</span>
+              <h3 class="post-title">理解Swift中struct和class在不同情况下性能的差异</h3>
+              <p class="post-excerpt">深入探讨内存分配、引用计数和方法派发的性能差异...</p>
             </div>
-            <h3 class="post-title">理解Swift中struct和class在不同情况下性能的差异</h3>
-            <p class="post-excerpt">深入探讨内存分配、引用计数和方法派发的性能差异...</p>
+            <div class="post-arrow">→</div>
           </a>
 
-          <a href="/2017/06/28/如何自己实现值类型的Copy-On-Write/" class="post-item">
-            <div class="post-meta">
-              <span class="post-date">2017-06-28</span>
+          <a href="/2017/06/28/如何自己实现值类型的Copy-On-Write/" class="post-card">
+            <div class="post-card-index">02</div>
+            <div class="post-card-content">
+              <span class="post-date">[2017-06-28]</span>
+              <h3 class="post-title">如何自己实现值类型的Copy-On-Write</h3>
+              <p class="post-excerpt">使用 COW 优化构建高效数据结构...</p>
             </div>
-            <h3 class="post-title">如何自己实现值类型的Copy-On-Write</h3>
-            <p class="post-excerpt">使用 COW 优化构建高效数据结构...</p>
+            <div class="post-arrow">→</div>
           </a>
         </div>
         <div class="posts-more">
-          <a href="/archives" class="btn">View All Posts →</a>
+          <a href="/archives" class="cyber-btn">
+            <span class="btn-text">View All Posts</span>
+            <span class="btn-glitch"></span>
+          </a>
         </div>
       </div>
     </section>
@@ -111,15 +174,72 @@
   <footer class="footer">
     <div class="container">
       <div class="footer-content">
-        <p class="footer-tagline">Building decentralized futures, one block at a time.</p>
-        <div class="footer-links">
-          <a href="https://github.com/HarrisHan" target="_blank">GitHub</a>
-          <a href="https://twitter.com/HarrisHan" target="_blank">Twitter</a>
-          <a href="https://linkedin.com/in/HarrisHan" target="_blank">LinkedIn</a>
+        <div class="footer-ascii">
+╔══════════════════════════════════════╗
+║  Building decentralized futures,     ║
+║  one block at a time.                ║
+╚══════════════════════════════════════╝
         </div>
-        <p class="footer-copy">© 2024 Harris Han</p>
+        <div class="footer-links">
+          <a href="https://github.com/HarrisHan" target="_blank" class="footer-link">
+            <span class="link-icon">[</span>GitHub<span class="link-icon">]</span>
+          </a>
+          <a href="https://twitter.com/HarrisHan" target="_blank" class="footer-link">
+            <span class="link-icon">[</span>Twitter<span class="link-icon">]</span>
+          </a>
+          <a href="https://linkedin.com/in/HarrisHan" target="_blank" class="footer-link">
+            <span class="link-icon">[</span>LinkedIn<span class="link-icon">]</span>
+          </a>
+        </div>
+        <p class="footer-copy">
+          <span class="copy-prefix">></span> © 2024 Harris Han | All systems operational
+        </p>
       </div>
     </div>
   </footer>
+
+  <script>
+    // Matrix Rain Effect
+    const canvas = document.getElementById('matrix-bg');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const chars = 'ハリスブロックチェーン01アイウエオカキクケコサシスセソタチツテトナニヌネノ';
+    const charArray = chars.split('');
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+
+    for (let i = 0; i < columns; i++) {
+      drops[i] = Math.random() * -100;
+    }
+
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(5, 5, 5, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#00ff4120';
+      ctx.font = fontSize + 'px Share Tech Mono';
+
+      for (let i = 0; i < drops.length; i++) {
+        const char = charArray[Math.floor(Math.random() * charArray.length)];
+        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    setInterval(drawMatrix, 50);
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
 </body>
 </html>
